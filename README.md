@@ -8,5 +8,4 @@ The next facebook, using a lot of code from https://github.com/megaboi2005/bark-
 * Allow users to join groups automatically, through acceptance, or by a link.
 * Private and public groups
 * Group join webpage 
-* Allow people to join other groups as guests ("Diplomat") 
 * Idk other things 
