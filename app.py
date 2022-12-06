@@ -21,7 +21,7 @@ import random
 from flask import Flask, request, jsonify
 from datetime import datetime
 #pip install email_validator
-
+import email_validator
 global logged_in
 global local_user
 logged_in = False
@@ -79,30 +79,34 @@ def register():
     global local_user
     sessname = session.get("name", "Login")
     form = """
-    <div class=posts>
-        <form action="/register">
-            <label for="id1">Email: </label>
-            <input type="text" id="id1" name="email">
-            <br>
-            <label for="id2">Username: </label>
-            <input type="text" id="id2" name="name">
-            <br>
-            <label for="id3">Password:  </label>
-            <input type="text" id="id3" name="password">
-            <br>
-            <label for="id4">Re-Enter Password:  </label>
-            <input type="text" id="id4" name="password_verification">
-            <br>
-            <input type="submit" value="Submit">
-        </form>
-    </div>"""
+    <center><div style="position: absolute; float: right;">
+<div class="posts">
+    <form action="/{location}">
+        <title>Register/Login</title>
+        <label for="id">Email: </label>
+        <input type="text" id="{email}" name="{email}">
+        <br>
+        <label for="id">Username: </label>
+        <input type="text" id="{name}" name="{name}">
+        <br>
+        <label for="id">Password:  </label>
+        <input type="text" id="{password}" name="{password}">
+        <br>
+        <label for="id">Re-Enter Password:  </label>
+        <input type="text" id="{password_validation}" name="{password_validation}">
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+</center>
+
+</div>"""
     get_users = json.loads(open("json/users.json", "r").read())
     email = request.args.get("email")
     name = request.args.get("name")
     password = request.args.get("password")
     password_verification = request.args.get("password_verification")
     
-    if name == None or password == None or email == None or password_verification == None:
+    if name == None or password == None or email == None or password_verification == None or password_verification != password:
         return (
                 open("templates/index.html", "r")
                 .read()
@@ -133,21 +137,25 @@ def register():
         .read()
         .replace("^logreg_redirect^", logreg_redirect())
         .replace("^logreg_display^", logreg_display())
-        .replace("^webpage^", open("templates/user.html", 'r').read())
+        .replace("^webpage^", open("templates/main.html", 'r').read())
     )
 
 
 @app.route("/profile/<user_link>")
 def user(user_link):
+    custom_display = open("templates/public_user.html", "r").read()
     global local_user
     global logged_in
+    if logged_in is True:
+        custom_display = open("templates/private_user.html", "r").read()
+
     return (
             open("templates/index.html", "r")
             .read()
             .replace("^Title^", local_user)
             .replace("^logreg_redirect^", logreg_redirect())
             .replace("^logreg_display^", logreg_display())
-            .replace("^webpage^", open("templates/user.html", "r").read())
+            .replace("^webpage^", custom_display)
         )
 
 
