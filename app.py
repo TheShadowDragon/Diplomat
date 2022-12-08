@@ -22,6 +22,7 @@ from flask import Flask, request, jsonify
 from datetime import datetime
 #pip install email_validator
 import email_validator
+from email_validator import validate_email
 global logged_in
 global local_user
 logged_in = False
@@ -79,33 +80,40 @@ def register():
     global local_user
     sessname = session.get("name", "Login")
     form = """
-    <center><div style="position: absolute; float: right;">
-<div class="posts">
+    <center class="posts" style="bottom: 100px;">
     <form action="/{location}">
         <title>Register/Login</title>
         <label for="id">Email: </label>
+        <br>
         <input type="text" id="{email}" name="{email}">
         <br>
         <label for="id">Username: </label>
+        <br>
         <input type="text" id="{name}" name="{name}">
         <br>
         <label for="id">Password:  </label>
+        <br>
         <input type="text" id="{password}" name="{password}">
         <br>
         <label for="id">Re-Enter Password:  </label>
+        <br>
         <input type="text" id="{password_validation}" name="{password_validation}">
         <br>
         <input type="submit" value="Submit">
     </form>
-</center>
-
-</div>"""
+    <div>
+    <a>Already have an account?</a>
+    <a href="/login">LOGIN</a>
+    </div>
+    </center>"""
     get_users = json.loads(open("json/users.json", "r").read())
     email = request.args.get("email")
     name = request.args.get("name")
     password = request.args.get("password")
     password_verification = request.args.get("password_verification")
+
     
+
     if name == None or password == None or email == None or password_verification == None or password_verification != password:
         return (
                 open("templates/index.html", "r")
@@ -116,7 +124,6 @@ def register():
                 .replace("^webpage^", form)
             )
 
-
     for item in get_users:
         if name == item:
             return (
@@ -126,7 +133,6 @@ def register():
                 .replace("^logreg_display^", logreg_display())
                 .replace("^webpage^", "User already exists." + form)
             )
-    
     add_user = open("json/users.json", 'w')
     get_users.update({name: {"password": password}})
     add_user.write(json.dumps(get_users, indent=2))
